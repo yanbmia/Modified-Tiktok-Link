@@ -3,137 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok URL Modifier</title>
+    <title>TikTok URL Cleaner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0f0f12;
+            --card-bg: rgba(30, 30, 35, 0.7);
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-cyan: #2af0ea;
+            --accent-pink: #ff0050;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --success: #10b981;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(42, 240, 234, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 80, 0.15) 0%, transparent 40%);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-        .container {
-            background: white;
-            border-radius: 20px;
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
             width: 100%;
+            max-width: 550px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
+
+        .header {
             text-align: center;
-            font-size: 2em;
+            margin-bottom: 35px;
         }
-        .form-group {
-            margin-bottom: 20px;
+
+        h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
         }
+
+        h1 span {
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #555;
+            font-size: 0.85rem;
             font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
+
         input[type="text"] {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
         }
+
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 4px rgba(42, 240, 234, 0.1);
         }
-        button {
+
+        button.primary-btn {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-pink));
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 12px;
+            color: white;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s ease;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
-        button:hover {
+
+        button.primary-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(255, 0, 80, 0.4);
         }
-        .results {
+
+        button.primary-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results Section */
+        .results-container {
+            margin-top: 0;
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .results-container.show {
             margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            display: none;
+            height: auto;
+            opacity: 1;
+            border-top: 1px solid var(--border-color);
+            padding-top: 30px;
         }
-        .results.show {
-            display: block;
+
+        .result-box {
+            background: var(--input-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .results h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-        .result-item {
-            margin-bottom: 15px;
+
+        .result-url {
+            flex-grow: 1;
+            color: var(--accent-cyan);
+            font-family: monospace;
+            font-size: 0.9rem;
             word-break: break-all;
-        }
-        .result-item strong {
-            color: #667eea;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .result-item a {
-            color: #764ba2;
-            text-decoration: none;
-        }
-        .result-item a:hover {
-            text-decoration: underline;
-        }
-        .copy-btn {
-            margin-top: 10px;
-            padding: 8px 16px;
-            background: #28a745;
-            color: white;
+            background: transparent;
             border: none;
-            border-radius: 6px;
+            outline: none;
+        }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-size: 14px;
+            transition: background 0.2s;
         }
-        .copy-btn:hover {
-            background: #218838;
+
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.2);
         }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Tooltip/Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: white;
+            color: #333;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>TikTok URL Modifier</h1>
+
+    <div class="glass-card">
+        <div class="header">
+            <h1>TikTok Link <span>Modifier</span></h1>
+            <p class="subtitle">Open Link in Mobile -> Copy & Paste</p>
+        </div>
+
         <form id="urlForm">
-            <div class="form-group">
-                <label for="url">Enter TikTok URL:</label>
-                <input type="text" id="url" name="url" placeholder="https://www.tiktok.com/@user/video/..." required>
+            <div class="input-group">
+                <label for="url">Link</label>
+                <input type="text" id="url" name="url" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="off" required>
             </div>
-            <button type="submit">Modify</button>
+            <button type="submit" class="primary-btn">MODIFY</button>
         </form>
 
-        <div class="results" id="results">
-            <h2>Results:</h2>
-            <div class="result-item">
-                <strong>Original URL:</strong>
-                <span id="originalUrl"></span>
-            </div>
-            <div class="result-item">
-                <strong>Modified URL:</strong>
-                <a href="#" id="modifiedUrl" target="_blank"></a>
-                <button class="copy-btn" onclick="copyModifiedUrl()">📋 Copy</button>
+        <div class="results-container" id="results">
+            <label>Cleaned Link</label>
+            <div class="result-box">
+                <input type="text" class="result-url" id="modifiedUrl" readonly>
+                
+                <button class="icon-btn" onclick="copyToClipboard()" aria-label="Copy">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+                
+                <a href="#" id="openLinkBtn" target="_blank" class="icon-btn" aria-label="Open">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
             </div>
         </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Copied to clipboard!
     </div>
 
     <script>
@@ -145,27 +276,45 @@
             return url;
         }
 
-        function copyModifiedUrl() {
-            const modifiedUrl = document.getElementById('modifiedUrl').textContent;
-            navigator.clipboard.writeText(modifiedUrl).then(() => {
-                alert('URL copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-            });
-        }
+        const form = document.getElementById('urlForm');
+        const resultsContainer = document.getElementById('results');
+        const modifiedUrlInput = document.getElementById('modifiedUrl');
+        const openLinkBtn = document.getElementById('openLinkBtn');
 
-        document.getElementById('urlForm').addEventListener('submit', function(e) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const originalUrl = document.getElementById('url').value;
-            const modifiedUrl = modifyUrl(originalUrl);
+            if(!originalUrl) return;
+
+            const newUrl = modifyUrl(originalUrl);
             
-            document.getElementById('originalUrl').textContent = originalUrl;
-            document.getElementById('modifiedUrl').textContent = modifiedUrl;
-            document.getElementById('modifiedUrl').href = modifiedUrl;
+            modifiedUrlInput.value = newUrl;
+            openLinkBtn.href = newUrl;
             
-            document.getElementById('results').classList.add('show');
+            // Show results with animation
+            resultsContainer.classList.add('show');
         });
+
+        function copyToClipboard() {
+            const copyText = document.getElementById("modifiedUrl");
+            
+            // Select the text field
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                showToast();
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('visible');
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3000);
+        }
     </script>
 </body>
 </html>
