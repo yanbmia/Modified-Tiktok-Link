@@ -6,7 +6,7 @@ Open the tiktok link your friend sends you, then copy the link from the search e
 
 Happy viewing!
 
-# New Git Page
+# Access via Web
 
 https://yanbmia.github.io/Modified-Tiktok-Link/
 
